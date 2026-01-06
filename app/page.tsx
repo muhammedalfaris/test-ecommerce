@@ -1,65 +1,158 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { authAPI } from '@/lib/api';
+import ProductCard from '@/components/ProductCard';
+import toast from 'react-hot-toast';
+
+interface APIProduct {
+  id: string;
+  name: string;
+  product_images: Array<{
+    product_image: string;
+  }>;
+  variation_colors: Array<{
+    color_id: number;
+    color_name: string;
+    color_images: string[];
+    status: boolean;
+    sizes: Array<{
+      size_id: number;
+      variation_product_id: number;
+      size_name: string;
+      status: boolean;
+      price: number | null;
+    }>;
+  }>;
+  sale_price: number;
+  mrp: number;
+  new: boolean;
+  discount: number;
+  out_of_stock: boolean;
+  slug: string;
+}
+
+interface ProductVariation {
+  id: string;
+  color: string;
+  image_url: string;
+  size?: string;
+  price: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  brand_logo?: string;
+  image_url: string;
+  price: number;
+  variations?: ProductVariation[];
+  sizes?: string[];
+}
+
+export default function HomePage() {
+  const { isAuthenticated } = useAuthStore();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await authAPI.getNewProducts();
+        
+        // Transform API data to match component structure
+        const transformedProducts: Product[] = response.data.map((apiProduct: APIProduct) => {
+          const variations: ProductVariation[] = [];
+          const availableSizes = new Set<string>();
+
+          // Extract variations from variation_colors
+          apiProduct.variation_colors.forEach((colorVariation) => {
+            if (colorVariation.status && colorVariation.color_images.length > 0) {
+              colorVariation.sizes.forEach((size) => {
+                if (size.status && size.price) {
+                  availableSizes.add(size.size_name);
+                  variations.push({
+                    id: size.variation_product_id.toString(),
+                    color: colorVariation.color_name,
+                    image_url: colorVariation.color_images[0],
+                    size: size.size_name,
+                    price: size.price
+                  });
+                }
+              });
+            }
+          });
+
+          return {
+            id: apiProduct.id,
+            name: apiProduct.name,
+            image_url: apiProduct.product_images[0]?.product_image || '',
+            price: apiProduct.sale_price,
+            variations: variations,
+            sizes: Array.from(availableSizes).sort()
+          };
+        });
+
+        setProducts(transformedProducts);
+      } catch (error: any) {
+        toast.error('Failed to load products');
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchProducts();
+    }
+  }, [isAuthenticated]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-black">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            Men's Jordan Shoes
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-400 text-lg">
+            Discover the latest collection
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              brand_logo={product.brand_logo}
+              image_url={product.image_url}
+              variations={product.variations}
+              price={product.price}
+              sizes={product.sizes}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
+
+        {/* Empty State */}
+        {products.length === 0 && !loading && (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-xl">No products available</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
