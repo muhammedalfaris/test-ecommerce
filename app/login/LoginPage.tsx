@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { authAPI } from '@/lib/api';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import gsap from 'gsap';
@@ -187,8 +187,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex">
-      <Toaster position="top-center" />
-      
       {/* Left Side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute top-8 left-8 z-10">

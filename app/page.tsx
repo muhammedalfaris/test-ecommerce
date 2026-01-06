@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import toast from 'react-hot-toast';
@@ -52,7 +51,6 @@ interface Product {
 }
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuthStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -104,10 +102,8 @@ export default function HomePage() {
       }
     };
 
-    if (isAuthenticated) {
-      fetchProducts();
-    }
-  }, [isAuthenticated]);
+    fetchProducts();
+  }, []);
 
   if (loading) {
     return (

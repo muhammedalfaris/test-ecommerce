@@ -145,7 +145,8 @@ export default function ProductCard({
 
   const handleBuyNow = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to purchase');
+      toast.dismiss();
+      toast.error('Please login to purchase', { duration: 3000 });
       router.push('/login');
       return;
     }

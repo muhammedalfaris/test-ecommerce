@@ -22,6 +22,8 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
   const pathname = usePathname();
   const { logout } = useAuthStore();
 
+  const isLoginPage = pathname === '/login';
+
   const handleLogout = () => {
     logout();
     document.cookie = 'access_token=; Max-Age=0; path=/;';
@@ -80,6 +82,14 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
               </>
             ) : (
               <>
+                {!isLoginPage && (
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                  >
+                    Login
+                  </Link>
+                )}
               </>
             )}
           </div>
@@ -128,7 +138,18 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
                 </button>
               </>
             ) : (
-                <><span className="text-white font-bold text-xl sm:block">NikeStore</span></>
+              <>
+                <span className="text-white font-bold text-xl sm:block">NikeStore</span>
+                {!isLoginPage && (
+                  <Link
+                    href="/login"
+                    className="block mt-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                )}
+              </>
             )}
           </div>
         )}
