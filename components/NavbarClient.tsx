@@ -35,7 +35,6 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
     <nav className="sticky top-0 z-50 bg-black border-b border-gray-800 backdrop-blur-sm bg-opacity-90">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="relative w-10 h-10">
             <Image
@@ -50,7 +49,6 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
             <span className="text-white font-bold text-xl hidden sm:block">NikeStore</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {isAuthenticated ? (
               <>
@@ -94,7 +92,6 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
             )}
           </div>
 
-          {/* Mobile menu button */}
           <button
             className="md:hidden text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -103,7 +100,6 @@ export default function NavbarClient({ user, isAuthenticated }: NavbarClientProp
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-gray-800 pt-4">
             {isAuthenticated ? (

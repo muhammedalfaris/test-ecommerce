@@ -33,7 +33,6 @@ export default function OrderSuccessPage() {
       return;
     }
 
-    // Get order details from URL params
     const orderId = searchParams.get('orderId');
     const productName = searchParams.get('productName');
     const variationName = searchParams.get('variationName');
@@ -107,7 +106,6 @@ export default function OrderSuccessPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4 py-12">
-      {/* Nike Logo */}
       <div ref={logoRef} className="mb-8">
         <div className="relative w-30 h-30">
           <Image
@@ -120,8 +118,6 @@ export default function OrderSuccessPage() {
           />
         </div>
       </div>
-
-      {/* Success Title */}
       <h1 
         ref={titleRef}
         className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 text-center"
@@ -129,7 +125,6 @@ export default function OrderSuccessPage() {
         Successfully Ordered!
       </h1>
 
-      {/* Date */}
       <p 
         ref={dateRef}
         className="text-gray-400 text-sm md:text-base mb-12"
@@ -137,13 +132,11 @@ export default function OrderSuccessPage() {
         {formatDate(orderDetails.created_at)}
       </p>
 
-      {/* Order Card */}
       <div 
         ref={cardRef}
         className="w-full max-w-2xl bg-[#1a1a1a] rounded-2xl p-6 md:p-8"
       >
         <div className="flex items-center gap-6">
-          {/* Product Image */}
           <div className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-[#c4f34a] to-[#9dc43a] rounded-xl flex items-center justify-center p-4">
             <img
               src={orderDetails.image_url}
@@ -152,7 +145,6 @@ export default function OrderSuccessPage() {
             />
           </div>
 
-          {/* Product Details */}
           <div className="flex-grow">
             <h2 className="text-white text-xl md:text-2xl font-semibold mb-2">
               {orderDetails.product_name}
@@ -162,7 +154,6 @@ export default function OrderSuccessPage() {
             </p>
           </div>
 
-          {/* Price */}
           <div className="flex-shrink-0 text-right">
             <div className="text-white text-xl md:text-2xl font-bold">
               ₹{orderDetails.price.toLocaleString('en-IN')}
@@ -175,7 +166,6 @@ export default function OrderSuccessPage() {
           </div>
         </div>
 
-        {/* Order ID */}
         <div className="mt-6 pt-6 border-t border-gray-800">
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400">Order ID</span>
@@ -184,7 +174,6 @@ export default function OrderSuccessPage() {
         </div>
       </div>
 
-      {/* Continue Shopping Button */}
       <button
         onClick={() => router.push('/')}
         className="mt-8 px-8 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-300"

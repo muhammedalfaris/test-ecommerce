@@ -13,17 +13,14 @@ export function useAuth() {
   } = useAuthStore();
 
   useEffect(() => {
-    // Check token on mount
     const token = getToken();
     
     if (token) {
-      // Check if token is expired
       if (isTokenExpired(token)) {
         logout();
         return;
       }
 
-      // If we have a token but store is not initialized
       if (!isAuthenticated || !user) {
         const userData = getUserFromToken(token);
         if (userData) {
@@ -34,7 +31,6 @@ export function useAuth() {
         }
       }
     } else if (isAuthenticated) {
-      // No token but store says authenticated
       logout();
     }
   }, []);

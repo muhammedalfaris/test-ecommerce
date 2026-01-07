@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://skilltestnextjs.evidam.zybotechlab.com';
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -24,7 +23,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle token refresh (if needed)
+// Response interceptor to handle token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -32,7 +31,6 @@ api.interceptors.response.use(
     
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      // Handle token refresh logic here if needed
       localStorage.removeItem('access_token');
       window.location.href = '/login';
     }
@@ -41,7 +39,6 @@ api.interceptors.response.use(
   }
 );
 
-// API endpoints
 export const authAPI = {
   verifyUser: (phoneNumber: string) => 
     api.post('/api/verify/', { phone_number: phoneNumber }),

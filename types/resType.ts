@@ -67,7 +67,6 @@ export interface OrdersResponse {
   orders: OrderItem[];
 }
 
-// API Response Types
 export interface APIProduct {
   id: string;
   name: string;

@@ -24,12 +24,10 @@ export default function LoginPage() {
   const [receivedOtp, setReceivedOtp] = useState('');
   const [isExistingUser, setIsExistingUser] = useState(false);
 
-  // Refs for GSAP animations
   const phoneFormRef = useRef<HTMLDivElement>(null);
   const otpFormRef = useRef<HTMLDivElement>(null);
   const nameFormRef = useRef<HTMLDivElement>(null);
 
-  // GSAP animation when step changes
   useEffect(() => {
     let currentRef: HTMLDivElement | null = null;
 
@@ -50,7 +48,6 @@ export default function LoginPage() {
     }
   }, [step]);
 
-  // Helper function to set cookie
   const setCookie = (name: string, value: string, days: number = 7) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -90,7 +87,6 @@ export default function LoginPage() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (value && index < 3) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
@@ -119,26 +115,23 @@ export default function LoginPage() {
     }
 
     if (isExistingUser) {
-      // Login existing user
       setLoading(true);
       try {
         const response = await authAPI.verifyUser(phoneNumber);
         const token = response.data.token.access;
         
-        // Decode user info from token or fetch from API
         const user = {
           user_id: 'temp_id',
           name: 'User',
           phone_number: phoneNumber,
         };
         
-        // Set cookie for SSR
         setCookie('access_token', token, 7);
         
         login(token, user);
         toast.success('Login successful!');
         router.push('/');
-        router.refresh(); // Refresh to update SSR state
+        router.refresh(); 
       } catch (error: any) {
         toast.error('Login failed');
       } finally {
@@ -166,7 +159,6 @@ export default function LoginPage() {
       
       const { token, user_id, name: userName, phone_number } = response.data;
       
-      // Set cookie for SSR
       setCookie('access_token', token.access, 7);
       
       login(token.access, {
@@ -177,7 +169,7 @@ export default function LoginPage() {
       
       toast.success('Registration successful!');
       router.push('/');
-      router.refresh(); // Refresh to update SSR state
+      router.refresh();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
@@ -187,7 +179,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex">
-      {/* Left Side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute top-8 left-8 z-10">
         </div>
@@ -212,10 +203,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
           <div className="lg:hidden mb-8 flex justify-center">
             <div className="relative w-40 h-40">
                 <Image
@@ -346,7 +335,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Social Icons */}
           <div className="mt-12 flex justify-center gap-6">
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
               <FaFacebook size={20} />

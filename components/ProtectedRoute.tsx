@@ -19,8 +19,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     if (!token) {
       router.push('/login');
     } else if (!isAuthenticated) {
-      // Token exists but state not initialized yet
-      // This will be handled by useAuth hook
+      //useAuth
     }
   }, [isAuthenticated, router]);
 

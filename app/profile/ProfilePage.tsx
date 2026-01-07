@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import gsap from 'gsap';
+import BicycleLoader from '@/components/Loader';
 
 interface OrderItem {
   id: string;
@@ -43,18 +44,16 @@ const fetchOrders = async () => {
     setLoading(true);
     const response = await authAPI.getUserOrders();
     
-    // Check if response has the orders array property
     if (response.data && response.data.orders && Array.isArray(response.data.orders)) {
-      // Map API response to match your component's expected structure
       const formattedOrders = response.data.orders.map((order: { order_id: any; product_name: any; product_price: any; product_mrp: any; product_image: any; created_date: any; payment_status: any; }) => ({
         id: order.order_id,
         product_name: order.product_name,
-        variation_name: '', // Add if available
+        variation_name: '', 
         price: order.product_price,
         original_price: order.product_mrp,
         image_url: order.product_image,
         created_at: order.created_date,
-        payment_status: order.payment_status || 'Completed' // Default if not available
+        payment_status: order.payment_status || 'Completed' 
       }));
       
       setOrders(formattedOrders);
@@ -74,7 +73,6 @@ const fetchOrders = async () => {
 
   useEffect(() => {
     if (!loading && orders.length > 0) {
-      // Animate title
       if (titleRef.current) {
         gsap.fromTo(
           titleRef.current,
@@ -83,7 +81,6 @@ const fetchOrders = async () => {
         );
       }
 
-      // Animate order cards
       ordersRef.current.forEach((card, index) => {
         if (card) {
           gsap.fromTo(
@@ -123,7 +120,7 @@ const fetchOrders = async () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+        <BicycleLoader/>
       </div>
     );
   }
@@ -131,7 +128,6 @@ const fetchOrders = async () => {
   return (
     <div className="min-h-screen bg-[#0a0a0a] px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-12">
           <h1 
             ref={titleRef}
@@ -148,7 +144,6 @@ const fetchOrders = async () => {
           </button>
         </div>
 
-        {/* Orders List */}
         {orders.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-gray-400 text-xl mb-6">No orders yet</p>
@@ -170,7 +165,6 @@ const fetchOrders = async () => {
                 className="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 hover:bg-[#222] transition-colors duration-300"
               >
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                  {/* Product Image */}
                   <div className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-[#c4f34a] to-[#9dc43a] rounded-xl flex items-center justify-center p-6">
                     <img
                       src={order.image_url}
@@ -179,7 +173,6 @@ const fetchOrders = async () => {
                     />
                   </div>
 
-                  {/* Product Details */}
                   <div className="flex-grow">
                     <h2 className="text-white text-xl md:text-2xl font-semibold mb-2">
                       {order.product_name}
@@ -192,7 +185,6 @@ const fetchOrders = async () => {
                     </p>
                   </div>
 
-                  {/* Price */}
                   <div className="flex-shrink-0 text-right w-full md:w-auto">
                     <div className="text-white text-2xl md:text-3xl font-bold mb-1">
                       ₹{order.price.toLocaleString('en-IN')}

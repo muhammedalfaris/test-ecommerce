@@ -28,10 +28,8 @@ interface ProductCardProps {
 export default function ProductCard({ 
   id, 
   name, 
-  brand_logo, 
   image_url, 
   variations = [],
-  price,
   sizes = []
 }: ProductCardProps) {
   const router = useRouter();
@@ -47,13 +45,12 @@ export default function ProductCard({
   const sizeRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Get unique colors from variations
   const colors = variations
     .map(v => ({ name: v.color, image: v.image_url }))
     .filter((v, i, a) => a.findIndex(x => x.name === v.name) === i);
 
-  // Get available sizes for selected color or all sizes
   const availableSizes = selectedColor
     ? variations.filter(v => v.color === selectedColor).map(v => v.size).filter(Boolean)
     : sizes;
@@ -68,38 +65,40 @@ export default function ProductCard({
 
     if (!card || !image || !nameEl) return;
 
-    // Initial setup - hide details
     gsap.set([sizeEl, colorEl, buttonEl], { 
       opacity: 0,
       y: 10
     });
 
-    // Hover animation
     const handleMouseEnter = () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+
       const tl = gsap.timeline();
+      timelineRef.current = tl;
       
-      // Move image up and slightly out of card
       tl.to(image, {
         y: -30,
         scale: 1.1,
         duration: 0.4,
         ease: 'power3.out'
       })
-      // Fade in size selector
+
       .to(sizeEl, {
         opacity: 1,
         y: 0,
         duration: 0.3,
         ease: 'power2.out'
       }, '-=0.2')
-      // Fade in color selector
+
       .to(colorEl, {
         opacity: 1,
         y: 0,
         duration: 0.3,
         ease: 'power2.out'
       }, '-=0.15')
-      // Fade in button
+
       .to(buttonEl, {
         opacity: 1,
         y: 0,
@@ -109,9 +108,13 @@ export default function ProductCard({
     };
 
     const handleMouseLeave = () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+
       const tl = gsap.timeline();
+      timelineRef.current = tl;
       
-      // Hide details first
       tl.to([buttonEl, colorEl, sizeEl], {
         opacity: 0,
         y: 10,
@@ -119,7 +122,6 @@ export default function ProductCard({
         ease: 'power2.in',
         stagger: 0.05
       })
-      // Move image back
       .to(image, {
         y: 0,
         scale: 1,
@@ -134,13 +136,16 @@ export default function ProductCard({
     return () => {
       card.removeEventListener('mouseenter', handleMouseEnter);
       card.removeEventListener('mouseleave', handleMouseLeave);
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
     };
   }, [availableSizes.length, colors.length]);
 
   const handleColorChange = (colorName: string, colorImage: string) => {
     setSelectedColor(colorName);
     setCurrentImage(colorImage);
-    setSelectedSize(''); // Reset size when color changes
+    setSelectedSize('');
   };
 
   const handleBuyNow = async () => {
@@ -151,7 +156,6 @@ export default function ProductCard({
       return;
     }
 
-    // Find the specific variation based on selected color and size
     let variationId = id;
     if (selectedColor && selectedSize) {
       const variation = variations.find(
@@ -195,7 +199,6 @@ export default function ProductCard({
       ref={cardRef}
       className="relative bg-[#2a2a2a] rounded-2xl overflow-hidden cursor-pointer h-[400px] flex flex-col"
     >
-      {/* Image fills entire top portion */}
       <div className="relative flex-1 overflow-hidden">
         <img
           ref={imageRef}
@@ -205,14 +208,11 @@ export default function ProductCard({
         />
       </div>
 
-      {/* Fixed Bottom Section */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/80 to-transparent p-4 space-y-3">
-        {/* Product Name - Always Visible */}
         <h3 ref={nameRef} className="text-white text-base font-bold uppercase tracking-wide">
           {name}
         </h3>
 
-        {/* Size Selector - Hidden by default */}
         {availableSizes.length > 0 && (
           <div ref={sizeRef} className="opacity-0">
             <div className="flex items-center gap-2 mb-1.5">
@@ -239,7 +239,6 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Color Selector - Hidden by default */}
         {colors.length > 0 && (
           <div ref={colorRef} className="opacity-0">
             <div className="flex items-center gap-2 mb-1.5">
@@ -271,7 +270,6 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Buy Now Button - Hidden by default */}
         <button
           ref={buttonRef}
           onClick={handleBuyNow}
@@ -285,7 +283,6 @@ export default function ProductCard({
   );
 }
 
-// Helper function to convert color names to hex values
 function getColorValue(colorName: string): string {
   const colorMap: Record<string, string> = {
     'Black': '#000000',

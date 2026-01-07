@@ -14,7 +14,6 @@ export default async function Navbar() {
       user = getUserFromToken(token);
       isAuthenticated = true;
     } catch (error) {
-      // Token is invalid or expired
       isAuthenticated = false;
     }
   }

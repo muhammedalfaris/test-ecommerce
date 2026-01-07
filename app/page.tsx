@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { authAPI } from '@/lib/api';
+import BicycleLoader from '@/components/Loader'
 import ProductCard from '@/components/ProductCard';
 import toast from 'react-hot-toast';
 
@@ -60,12 +61,10 @@ export default function HomePage() {
         setLoading(true);
         const response = await authAPI.getNewProducts();
         
-        // Transform API data to match component structure
         const transformedProducts: Product[] = response.data.map((apiProduct: APIProduct) => {
           const variations: ProductVariation[] = [];
           const availableSizes = new Set<string>();
 
-          // Extract variations from variation_colors
           apiProduct.variation_colors.forEach((colorVariation) => {
             if (colorVariation.status && colorVariation.color_images.length > 0) {
               colorVariation.sizes.forEach((size) => {
@@ -108,14 +107,13 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+        <BicycleLoader/>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Hero Section */}
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -126,7 +124,6 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {products.map((product) => (
             <ProductCard
@@ -142,7 +139,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Empty State */}
         {products.length === 0 && !loading && (
           <div className="text-center py-20">
             <p className="text-gray-400 text-xl">No products available</p>
