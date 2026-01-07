@@ -27,6 +27,7 @@ export default function LoginPage() {
   const phoneFormRef = useRef<HTMLDivElement>(null);
   const otpFormRef = useRef<HTMLDivElement>(null);
   const nameFormRef = useRef<HTMLDivElement>(null);
+  const firstOtpInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let currentRef: HTMLDivElement | null = null;
@@ -45,6 +46,16 @@ export default function LoginPage() {
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
       );
+    }
+  }, [step]);
+
+  useEffect(() => {
+    // Auto-focus first OTP input when step changes to 'otp'
+    if (step === 'otp' && firstOtpInputRef.current) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        firstOtpInputRef.current?.focus();
+      }, 100);
     }
   }, [step]);
 
@@ -72,6 +83,8 @@ export default function LoginPage() {
       
       toast.success(`OTP sent: ${data.otp}`, { duration: 5000 });
       setStep('otp');
+      // Reset OTP when moving to OTP step
+      setOtp(['', '', '', '']);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to send OTP');
     } finally {
@@ -87,9 +100,25 @@ export default function LoginPage() {
     newOtp[index] = value;
     setOtp(newOtp);
 
+    // Auto-focus next input
     if (value && index < 3) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
+    }
+
+    // Check if all OTP digits are filled
+    const allDigitsFilled = newOtp.every(digit => digit !== '');
+    if (allDigitsFilled) {
+      // Auto-submit OTP after a small delay
+      setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) {
+          const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+          if (submitButton && !submitButton.disabled) {
+            submitButton.click();
+          }
+        }
+      }, 100);
     }
   };
 
@@ -279,6 +308,7 @@ export default function LoginPage() {
                       <input
                         key={index}
                         id={`otp-${index}`}
+                        ref={index === 0 ? firstOtpInputRef : null}
                         type="text"
                         inputMode="numeric"
                         maxLength={1}
