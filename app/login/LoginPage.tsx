@@ -149,12 +149,10 @@ export default function LoginPage() {
         const response = await authAPI.verifyUser(phoneNumber);
         const token = response.data.token.access;
         
-        // Decode token to get user info
         const { getUserFromToken } = await import('@/lib/token');
         const user = getUserFromToken(token);
         
         if (!user) {
-          // Fallback if token decode fails
           throw new Error('Failed to decode user token');
         }
         

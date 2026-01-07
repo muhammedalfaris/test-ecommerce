@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { getUserFromToken, isTokenExpired } from '@/lib/token';
 
-// Helper to get token from cookies (client-side only)
 function getTokenFromCookie(): string | null {
   if (typeof window === 'undefined') return null;
   

@@ -24,8 +24,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(homeUrl);
   }
 
-  // Continue with the request - no need to inject headers
-  // Server components can access cookies directly via cookies() from next/headers
   return NextResponse.next();
 }
 

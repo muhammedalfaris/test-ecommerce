@@ -13,7 +13,6 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   
-  // Actions
   setUser: (user: User) => void;
   login: (user: User) => void;
   logout: () => void;
@@ -41,7 +40,6 @@ export const useAuthStore = create<AuthState>()(
       },
       
       logout: () => {
-        // Clear both localStorage and cookies on logout
         if (typeof window !== 'undefined') {
           localStorage.removeItem('access_token');
           document.cookie = 'access_token=; Max-Age=0; path=/;';

@@ -8,7 +8,7 @@ import { authAPI } from '@/lib/api-client';
 import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import BicycleLoader from '@/components/Loader';
-import { FiArrowLeft, FiLogOut } from 'react-icons/fi'; // Added FiLogOut
+import { FiArrowLeft, FiLogOut } from 'react-icons/fi'; 
 
 interface OrderItem {
   id: string;
@@ -131,7 +131,6 @@ const fetchOrders = async () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-4">
-            {/* Back Arrow Button */}
             <button
               onClick={() => router.back()}
               className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-300"
@@ -148,8 +147,6 @@ const fetchOrders = async () => {
             </h1>
           </div>
           
-          {/* Desktop: No logout button */}
-          {/* Mobile: Logout icon button */}
           <button
             onClick={handleLogout}
             className="md:hidden p-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-300"
