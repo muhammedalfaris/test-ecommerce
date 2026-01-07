@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { authAPI } from '@/lib/api';
+import { authAPI } from '@/lib/api-client';
 import toast from 'react-hot-toast';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -120,15 +120,18 @@ export default function LoginPage() {
         const response = await authAPI.verifyUser(phoneNumber);
         const token = response.data.token.access;
         
-        const user = {
-          user_id: 'temp_id',
-          name: 'User',
-          phone_number: phoneNumber,
-        };
+        // Decode token to get user info
+        const { getUserFromToken } = await import('@/lib/token');
+        const user = getUserFromToken(token);
+        
+        if (!user) {
+          // Fallback if token decode fails
+          throw new Error('Failed to decode user token');
+        }
         
         setCookie('access_token', token, 7);
         
-        login(token, user);
+        login(user);
         toast.success('Login successful!');
         router.push('/');
         router.refresh(); 
@@ -161,7 +164,7 @@ export default function LoginPage() {
       
       setCookie('access_token', token.access, 7);
       
-      login(token.access, {
+      login({
         user_id,
         name: userName,
         phone_number,

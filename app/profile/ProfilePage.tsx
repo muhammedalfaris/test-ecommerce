@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/store/authStore';
-import { authAPI } from '@/lib/api';
+import { authAPI } from '@/lib/api-client';
 import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import BicycleLoader from '@/components/Loader';

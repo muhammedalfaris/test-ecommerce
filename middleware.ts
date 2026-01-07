@@ -24,19 +24,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(homeUrl);
   }
 
-  const requestHeaders = new Headers(request.headers);
-  
-  if (token) {
-    requestHeaders.set('x-access-token', token);
-  }
-
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
-
-  return response;
+  // Continue with the request - no need to inject headers
+  // Server components can access cookies directly via cookies() from next/headers
+  return NextResponse.next();
 }
 
 export const config = {

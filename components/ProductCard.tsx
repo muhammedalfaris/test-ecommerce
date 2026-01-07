@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { authAPI } from '@/lib/api';
+import { authAPI } from '@/lib/api-client';
 import toast from 'react-hot-toast';
 
 interface ProductVariation {

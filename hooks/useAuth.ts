@@ -1,19 +1,32 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { getToken, getUserFromToken, isTokenExpired } from '@/lib/token';
+import { getUserFromToken, isTokenExpired } from '@/lib/token';
+
+// Helper to get token from cookies (client-side only)
+function getTokenFromCookie(): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'access_token') {
+      return value || null;
+    }
+  }
+  
+  return null;
+}
 
 export function useAuth() {
   const { 
     isAuthenticated, 
     user, 
-    accessToken, 
-    setToken, 
     setUser, 
     logout 
   } = useAuthStore();
 
   useEffect(() => {
-    const token = getToken();
+    const token = getTokenFromCookie();
     
     if (token) {
       if (isTokenExpired(token)) {
@@ -24,7 +37,6 @@ export function useAuth() {
       if (!isAuthenticated || !user) {
         const userData = getUserFromToken(token);
         if (userData) {
-          setToken(token);
           setUser(userData);
         } else {
           logout();
@@ -38,7 +50,6 @@ export function useAuth() {
   return {
     isAuthenticated,
     user,
-    accessToken,
     logout,
   };
 }

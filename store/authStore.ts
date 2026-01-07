@@ -8,16 +8,14 @@ interface User {
 }
 
 interface AuthState {
-  accessToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
   
   // Actions
-  setToken: (token: string) => void;
   setUser: (user: User) => void;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -27,23 +25,15 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      accessToken: null,
       user: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
       
-      setToken: (token: string) => {
-        localStorage.setItem('access_token', token);
-        set({ accessToken: token, isAuthenticated: true });
-      },
+      setUser: (user: User) => set({ user, isAuthenticated: true }),
       
-      setUser: (user: User) => set({ user }),
-      
-      login: (token: string, user: User) => {
-        localStorage.setItem('access_token', token);
+      login: (user: User) => {
         set({ 
-          accessToken: token, 
           user, 
           isAuthenticated: true,
           error: null 
@@ -51,9 +41,12 @@ export const useAuthStore = create<AuthState>()(
       },
       
       logout: () => {
-        localStorage.removeItem('access_token');
+        // Clear both localStorage and cookies on logout
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          document.cookie = 'access_token=; Max-Age=0; path=/;';
+        }
         set({ 
-          accessToken: null, 
           user: null, 
           isAuthenticated: false,
           error: null 
@@ -69,7 +62,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       partialize: (state) => ({ 
-        accessToken: state.accessToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated 
       }),
